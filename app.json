@@ -8,9 +8,20 @@
     "scheme": "mobapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "infoPlist": {
+        "NSBluetoothAlwaysUsageDescription": "Bluetooth გამოიყენება ახლომდებარე მოწყობილობების მოსაძებნად.",
+        "NSBluetoothPeripheralUsageDescription": "Bluetooth გამოიყენება მოწყობილობასთან დასაკავშირებლად."
+      }
     },
     "android": {
+      "permissions": [
+        "BLUETOOTH",
+        "BLUETOOTH_ADMIN",
+        "BLUETOOTH_SCAN",
+        "BLUETOOTH_CONNECT",
+        "ACCESS_FINE_LOCATION"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
