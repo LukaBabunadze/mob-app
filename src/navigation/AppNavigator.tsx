@@ -5,6 +5,7 @@ import { createDrawerNavigator, DrawerToggleButton } from '@react-navigation/dra
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { CourseDetailScreen } from '@/labs/courses/CourseDetailScreen';
+import { useAppTheme } from '@/labs/theme/ThemeProvider';
 import { CourseListScreen } from '@/labs/courses/CourseListScreen';
 import { AboutScreen, LogoutScreen, SettingsScreen } from '@/labs/shell/SimpleScreen';
 import { HomeScreen } from '@/labs/shell/HomeScreen';
@@ -15,14 +16,21 @@ const Drawer = createDrawerNavigator<DrawerParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
 const Stack = createNativeStackNavigator<CourseStackParamList>();
 
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    background: '#FFFFFF',
-    primary: '#6B2FD6',
-  },
-};
+function navigationTheme(mode: 'light' | 'dark') {
+  const dark = mode === 'dark';
+  return {
+    ...DefaultTheme,
+    dark,
+    colors: {
+      ...DefaultTheme.colors,
+      background: dark ? '#111111' : '#FFFFFF',
+      card: dark ? '#1C1C1E' : '#FFFFFF',
+      text: dark ? '#FFFFFF' : '#1C1C1E',
+      border: dark ? '#2C2C2E' : '#E6E6EA',
+      primary: '#6B2FD6',
+    },
+  };
+}
 
 function CourseStack() {
   return (
@@ -85,8 +93,10 @@ function MainTabs() {
 }
 
 export function AppNavigator() {
+  const { mode } = useAppTheme();
+
   return (
-    <NavigationContainer theme={theme}>
+    <NavigationContainer theme={navigationTheme(mode)}>
       <Drawer.Navigator
         screenOptions={{
           headerTintColor: '#6B2FD6',

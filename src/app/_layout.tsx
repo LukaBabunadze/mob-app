@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { ThemeProvider } from '@/labs/theme/ThemeProvider';
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -15,7 +17,9 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={styles.root}>
-      <Stack screenOptions={{ headerShown: false }} />
+      <ThemeProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }

@@ -1,13 +1,20 @@
 import type { DrawerScreenProps } from '@react-navigation/drawer';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
+import { useAppTheme } from '@/labs/theme/ThemeProvider';
 import type { DrawerParamList } from '@/navigation/types';
 
 export function SettingsScreen() {
+  const { mode, setMode, colors } = useAppTheme();
+  const dark = mode === 'dark';
+
   return (
-    <View style={styles.screen}>
-      <Text style={styles.title}>პარამეტრები</Text>
-      <Text style={styles.body}>თემა და ენა აქ დაემატება.</Text>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>პარამეტრები</Text>
+      <View style={styles.row}>
+        <Text style={[styles.body, { color: colors.text }]}>მუქი თემა</Text>
+        <Switch value={dark} onValueChange={(enabled) => setMode(enabled ? 'dark' : 'light')} />
+      </View>
     </View>
   );
 }
@@ -44,6 +51,11 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     color: '#1C1C1E',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   body: {
     fontSize: 16,

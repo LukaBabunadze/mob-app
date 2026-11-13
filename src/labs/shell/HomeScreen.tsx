@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import CatalogScreen from '@/app/catalog';
+import { NotesScreen } from '@/labs/notes/NotesScreen';
 import { StopwatchScreen } from '@/labs/stopwatch/StopwatchScreen';
 
 export function HomeScreen() {
   const [showStopwatch, setShowStopwatch] = useState(false);
   const [showCatalog, setShowCatalog] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
 
-  if (showStopwatch || showCatalog) {
+  if (showStopwatch || showCatalog || showNotes) {
     return (
       <View style={styles.flex}>
         <Pressable
@@ -16,11 +18,12 @@ export function HomeScreen() {
           onPress={() => {
             setShowStopwatch(false);
             setShowCatalog(false);
+            setShowNotes(false);
           }}
           style={styles.back}>
           <Text style={styles.backText}>უკან</Text>
         </Pressable>
-        {showStopwatch ? <StopwatchScreen /> : <CatalogScreen />}
+        {showStopwatch ? <StopwatchScreen /> : showCatalog ? <CatalogScreen /> : <NotesScreen />}
       </View>
     );
   }
@@ -29,6 +32,9 @@ export function HomeScreen() {
     <View style={styles.screen}>
       <Text style={styles.title}>მთავარი</Text>
       <Text style={styles.body}>კურსები, პროფილი და ლაბორატორიული ეკრანები ერთ აპშია.</Text>
+      <Pressable accessibilityRole="button" onPress={() => setShowNotes(true)} style={styles.button}>
+        <Text style={styles.buttonText}>ჩანაწერები</Text>
+      </Pressable>
       <Pressable accessibilityRole="button" onPress={() => setShowCatalog(true)} style={styles.button}>
         <Text style={styles.buttonText}>კურსების კატალოგი</Text>
       </Pressable>
