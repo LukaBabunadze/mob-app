@@ -1,0 +1,13 @@
+{
+  "settingsTitle": "Settings",
+  "darkTheme": "Dark theme",
+  "language": "Language",
+  "aboutTitle": "About",
+  "aboutBody": "Campus brings together courses, notes, and the lab screens.",
+  "version": "Version",
+  "build": "Build number",
+  "home": "Home",
+  "courses": "Courses",
+  "profile": "Profile",
+  "logout": "Log out"
+}

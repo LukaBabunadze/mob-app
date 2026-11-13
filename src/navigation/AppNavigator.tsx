@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator, DrawerToggleButton } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { useLanguage } from '@/i18n/LanguageProvider';
 import { CourseDetailScreen } from '@/labs/courses/CourseDetailScreen';
 import { useAppTheme } from '@/labs/theme/ThemeProvider';
 import { CourseListScreen } from '@/labs/courses/CourseListScreen';
@@ -33,13 +34,15 @@ function navigationTheme(mode: 'light' | 'dark') {
 }
 
 function CourseStack() {
+  const { t } = useLanguage();
+
   return (
     <Stack.Navigator screenOptions={{ headerTintColor: '#6B2FD6' }}>
       <Stack.Screen
         name="CourseList"
         component={CourseListScreen}
         options={{
-          title: 'კურსები',
+          title: t('courses'),
           headerLeft: () => <DrawerToggleButton tintColor="#6B2FD6" />,
         }}
       />
@@ -53,6 +56,8 @@ function CourseStack() {
 }
 
 function MainTabs() {
+  const { t } = useLanguage();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -64,7 +69,7 @@ function MainTabs() {
         name="Home"
         component={HomeScreen}
         options={{
-          title: 'მთავარი',
+          title: t('home'),
           headerShown: true,
           headerLeft: () => <DrawerToggleButton tintColor="#6B2FD6" />,
           tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
@@ -74,7 +79,7 @@ function MainTabs() {
         name="Courses"
         component={CourseStack}
         options={{
-          title: 'კურსები',
+          title: t('courses'),
           tabBarIcon: ({ color, size }) => <Ionicons name="book" color={color} size={size} />,
         }}
       />
@@ -82,7 +87,7 @@ function MainTabs() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          title: 'პროფილი',
+          title: t('profile'),
           headerShown: true,
           headerLeft: () => <DrawerToggleButton tintColor="#6B2FD6" />,
           tabBarIcon: ({ color, size }) => <Ionicons name="person" color={color} size={size} />,
@@ -94,6 +99,7 @@ function MainTabs() {
 
 export function AppNavigator() {
   const { mode } = useAppTheme();
+  const { t } = useLanguage();
 
   return (
     <NavigationContainer theme={navigationTheme(mode)}>
@@ -103,10 +109,10 @@ export function AppNavigator() {
           drawerActiveTintColor: '#6B2FD6',
           swipeEnabled: true,
         }}>
-        <Drawer.Screen name="Main" component={MainTabs} options={{ title: 'მთავარი', headerShown: false }} />
-        <Drawer.Screen name="Settings" component={SettingsScreen} options={{ title: 'პარამეტრები' }} />
-        <Drawer.Screen name="About" component={AboutScreen} options={{ title: 'შესახებ' }} />
-        <Drawer.Screen name="Logout" component={LogoutScreen} options={{ title: 'გასვლა' }} />
+        <Drawer.Screen name="Main" component={MainTabs} options={{ title: t('home'), headerShown: false }} />
+        <Drawer.Screen name="Settings" component={SettingsScreen} options={{ title: t('settingsTitle') }} />
+        <Drawer.Screen name="About" component={AboutScreen} options={{ title: t('aboutTitle') }} />
+        <Drawer.Screen name="Logout" component={LogoutScreen} options={{ title: t('logout') }} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
