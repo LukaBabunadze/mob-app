@@ -1,255 +1,217 @@
-import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  Pressable,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { SkillChip } from '@/components/skill-chip';
+import { CourseCard } from '@/components/course-card';
+import { theme } from '@/constants/catalog-theme';
+import { COURSES, FILTERS, type FilterName } from '@/data/courses';
 
-const BANNER_URI =
-  'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&h=480&q=80';
-
-const PROFILE_NAME = 'ნინო ბერიძე';
-const BIO =
-  'ბიზნესის, ტექნოლოგიების და განათლების ფაკულტეტის სტუდენტი. დაინტერესებულია მობილური აპლიკაციებით და მონაცემთა ბაზებით.';
-
-const SKILLS = [
-  { label: 'JavaScript', level: '4/5' },
-  { label: 'React Native', level: '2/5' },
-  { label: 'SQL', level: '3/5' },
-];
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export default function ProfileScreen() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [savedName, setSavedName] = useState<string | null>(null);
-
-  const canSave = name.trim().length > 0 && EMAIL_PATTERN.test(email.trim());
-
-  function handleSave() {
-    if (!canSave) {
-      return;
-    }
-    setSavedName(name.trim());
+function columnCount(width: number) {
+  if (width < 600) {
+    return 2;
   }
+  if (width < 1000) {
+    return 3;
+  }
+  return 4;
+}
+
+export default function CatalogScreen() {
+  const { width } = useWindowDimensions();
+  const columns = columnCount(width);
+  const wide = width >= 600;
+  const [filter, setFilter] = useState<FilterName>('ყველა');
+  const [search, setSearch] = useState('');
+
+  const query = search.trim().toLowerCase();
+  const visible = COURSES.filter((course) => {
+    const matchesFilter = filter === 'ყველა' || course.category === filter;
+    const matchesSearch =
+      query.length === 0 ||
+      course.title.toLowerCase().includes(query) ||
+      course.lecturer.toLowerCase().includes(query);
+    return matchesFilter && matchesSearch;
+  });
+
+  const cardWidthStyle =
+    columns === 2 ? styles.cardWidth2 : columns === 3 ? styles.cardWidth3 : styles.cardWidth4;
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <StatusBar style="dark" />
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <SafeAreaView style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <View style={wide ? styles.headerWide : styles.headerNarrow}>
+          <View style={styles.titleBlock}>
+            <Text style={styles.screenTitle}>კურსების კატალოგი</Text>
+            <Text style={styles.subtitle}>შემოდგომის სემესტრი · {visible.length} კურსი</Text>
+          </View>
+          <View style={[styles.search, wide ? styles.searchWide : styles.searchNarrow]}>
+            <Text style={styles.searchIcon}>⌕</Text>
+            <TextInput
+              value={search}
+              onChangeText={setSearch}
+              placeholder="ძიება კურსებში"
+              placeholderTextColor={theme.color.muted}
+              style={styles.searchInput}
+              testID="search-input"
+            />
+          </View>
+        </View>
+
         <ScrollView
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.content}>
-          <Text style={styles.title}>ჩემი პროფილი</Text>
-
-          <View style={styles.bannerFrame}>
-            <Image
-              source={{ uri: BANNER_URI }}
-              style={styles.banner}
-              resizeMode="cover"
-              accessibilityLabel="ბანერი"
-            />
-          </View>
-
-          <View style={styles.identity}>
-            <Image
-              source={require('@/assets/images/avatar.png')}
-              style={styles.avatar}
-              accessibilityLabel="ავატარი"
-            />
-            <View style={styles.identityText}>
-              <Text style={styles.profileName}>{PROFILE_NAME}</Text>
-              <Text numberOfLines={2} style={styles.bio}>
-                {BIO}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.skills}>
-            {SKILLS.map((skill) => (
-              <SkillChip key={skill.label} label={skill.label} level={skill.level} />
-            ))}
-          </View>
-
-          <View style={styles.form}>
-            <Text style={styles.formLabel}>კონტაქტის მონაცემები</Text>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              placeholder="სახელი"
-              placeholderTextColor="#A1A1AA"
-              autoCapitalize="words"
-              style={styles.input}
-              testID="name-input"
-            />
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              placeholder="ელფოსტა"
-              placeholderTextColor="#A1A1AA"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              style={styles.input}
-              testID="email-input"
-            />
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              placeholder="პაროლი"
-              placeholderTextColor="#A1A1AA"
-              secureTextEntry
-              style={styles.input}
-              testID="password-input"
-            />
-
-            <Pressable
-              accessibilityRole="button"
-              accessibilityState={{ disabled: !canSave }}
-              disabled={!canSave}
-              onPress={handleSave}
-              testID="save-button"
-              style={({ pressed }) => [
-                styles.saveButton,
-                !canSave && styles.saveButtonDisabled,
-                pressed && canSave && styles.saveButtonPressed,
-              ]}>
-              <Text style={styles.saveLabel}>შენახვა</Text>
-            </Pressable>
-
-            {savedName ? (
-              <Text style={styles.greeting} testID="greeting">
-                მოგესალმებით, {savedName}!
-              </Text>
-            ) : null}
-          </View>
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filters}>
+          {FILTERS.map((name) => {
+            const selected = filter === name;
+            return (
+              <Pressable
+                key={name}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                onPress={() => setFilter(name)}
+                style={selected ? styles.filterSelected : styles.filterIdle}>
+                <Text style={selected ? styles.filterTextSelected : styles.filterText}>{name}</Text>
+              </Pressable>
+            );
+          })}
         </ScrollView>
-      </KeyboardAvoidingView>
+
+        <View style={styles.grid}>
+          {visible.map((course) => (
+            <CourseCard key={course.id} course={course} widthStyle={cardWidthStyle} />
+          ))}
+        </View>
+        {visible.length === 0 ? <Text style={styles.empty}>კურსი ვერ მოიძებნა</Text> : null}
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
+  screen: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  flex: {
-    flex: 1,
+    backgroundColor: theme.color.background,
   },
   content: {
-    width: '100%',
-    maxWidth: 480,
-    alignSelf: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    padding: theme.space.screen,
+    gap: theme.space.gap,
     paddingBottom: 32,
   },
-  title: {
-    fontSize: 28,
-    lineHeight: 34,
-    fontWeight: '700',
-    color: '#1C1C1E',
-    marginBottom: 16,
+  headerNarrow: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    gap: theme.space.gap,
   },
-  bannerFrame: {
-    width: '100%',
-    height: 120,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  banner: {
-    width: '100%',
-    height: 120,
-    borderRadius: 12,
-  },
-  identity: {
+  headerWide: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 12,
-    marginTop: 16,
+    gap: theme.space.gap,
   },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+  titleBlock: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: 2,
+    flexShrink: 1,
   },
-  identityText: {
-    flex: 1,
-  },
-  profileName: {
-    fontSize: 18,
-    lineHeight: 24,
+  screenTitle: {
+    fontSize: 26,
+    lineHeight: 32,
     fontWeight: '700',
-    color: '#1C1C1E',
+    color: theme.color.text,
   },
-  bio: {
-    marginTop: 2,
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#6B6578',
-  },
-  skills: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 14,
-  },
-  form: {
-    marginTop: 22,
-    gap: 10,
-  },
-  formLabel: {
+  subtitle: {
     fontSize: 13,
     lineHeight: 18,
-    color: '#8E8E93',
-    marginBottom: 2,
+    color: theme.color.muted,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#E6E6EA',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: '#1C1C1E',
-    backgroundColor: '#FFFFFF',
-  },
-  saveButton: {
-    marginTop: 4,
-    backgroundColor: '#6B2FD6',
-    borderRadius: 12,
-    paddingVertical: 14,
+  search: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     alignItems: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderColor: theme.color.border,
+    borderRadius: theme.radius.search,
+    paddingHorizontal: 12,
+    backgroundColor: theme.color.background,
+    minHeight: 44,
   },
-  saveButtonDisabled: {
-    opacity: 0.4,
+  searchNarrow: {
+    alignSelf: 'stretch',
   },
-  saveButtonPressed: {
-    backgroundColor: '#2E1466',
+  searchWide: {
+    flexGrow: 1,
+    flexShrink: 1,
+    maxWidth: 360,
   },
-  saveLabel: {
-    color: '#FFFFFF',
-    fontSize: 16,
+  searchIcon: {
+    color: theme.color.muted,
+    fontSize: 18,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: theme.color.text,
+    paddingVertical: 8,
+  },
+  filters: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: theme.space.gap,
+    paddingRight: theme.space.screen,
+  },
+  filterIdle: {
+    backgroundColor: theme.color.chip,
+    borderRadius: theme.radius.chip,
+    paddingHorizontal: theme.space.chipX,
+    paddingVertical: theme.space.chipY,
+  },
+  filterSelected: {
+    backgroundColor: theme.color.active,
+    borderRadius: theme.radius.chip,
+    paddingHorizontal: theme.space.chipX,
+    paddingVertical: theme.space.chipY,
+  },
+  filterText: {
+    color: theme.color.text,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  filterTextSelected: {
+    color: theme.color.white,
+    fontSize: 14,
     fontWeight: '700',
   },
-  greeting: {
-    color: '#6B2FD6',
-    fontSize: 16,
-    fontWeight: '600',
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: theme.space.gap,
+  },
+  cardWidth2: {
+    width: '48%',
+  },
+  cardWidth3: {
+    width: '31%',
+  },
+  cardWidth4: {
+    width: '23%',
+  },
+  empty: {
+    color: theme.color.muted,
+    fontSize: 15,
   },
 });
