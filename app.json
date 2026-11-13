@@ -33,7 +33,28 @@
           "imageWidth": 76
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "კამერა გამოიყენება ფოტოს და ვიდეოს გადასაღებად.",
+          "microphonePermission": "მიკროფონი გამოიყენება ვიდეოს ჩასაწერად.",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "გალერეა გამოიყენება გადაღებული ფაილის შესანახად.",
+          "savePhotosPermission": "გალერეა გამოიყენება გადაღებული ფაილის შესანახად."
+        }
+      ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "კონტაქტები გამოიყენება სიის საჩვენებლად."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

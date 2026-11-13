@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import CatalogScreen from '@/app/catalog';
+import { DeviceScreen } from '@/labs/device/DeviceScreen';
 import { NotesScreen } from '@/labs/notes/NotesScreen';
 import { StopwatchScreen } from '@/labs/stopwatch/StopwatchScreen';
 
@@ -9,8 +10,9 @@ export function HomeScreen() {
   const [showStopwatch, setShowStopwatch] = useState(false);
   const [showCatalog, setShowCatalog] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
+  const [showDevice, setShowDevice] = useState(false);
 
-  if (showStopwatch || showCatalog || showNotes) {
+  if (showStopwatch || showCatalog || showNotes || showDevice) {
     return (
       <View style={styles.flex}>
         <Pressable
@@ -19,11 +21,20 @@ export function HomeScreen() {
             setShowStopwatch(false);
             setShowCatalog(false);
             setShowNotes(false);
+            setShowDevice(false);
           }}
           style={styles.back}>
           <Text style={styles.backText}>უკან</Text>
         </Pressable>
-        {showStopwatch ? <StopwatchScreen /> : showCatalog ? <CatalogScreen /> : <NotesScreen />}
+        {showStopwatch ? (
+          <StopwatchScreen />
+        ) : showCatalog ? (
+          <CatalogScreen />
+        ) : showNotes ? (
+          <NotesScreen />
+        ) : (
+          <DeviceScreen />
+        )}
       </View>
     );
   }
@@ -32,6 +43,9 @@ export function HomeScreen() {
     <View style={styles.screen}>
       <Text style={styles.title}>მთავარი</Text>
       <Text style={styles.body}>კურსები, პროფილი და ლაბორატორიული ეკრანები ერთ აპშია.</Text>
+      <Pressable accessibilityRole="button" onPress={() => setShowDevice(true)} style={styles.button}>
+        <Text style={styles.buttonText}>კონტაქტები და კამერა</Text>
+      </Pressable>
       <Pressable accessibilityRole="button" onPress={() => setShowNotes(true)} style={styles.button}>
         <Text style={styles.buttonText}>ჩანაწერები</Text>
       </Pressable>
